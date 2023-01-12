@@ -23,17 +23,3 @@ steps:
             allowTelemetryCollection: true
   displayName: "Initiallize Terraform"
   
-- task: TerraformCLI@0
-  inputs:
-            command: 'validate'
-            workingDirectory: '$(System.DefaultWorkingDirectory)/Env'
-            allowTelemetryCollection: true
-  displayName: "validate Terraform Script"
-
-- task: TerraformCLI@0
-  inputs:
-            command: 'apply'
-            workingDirectory: '$(System.DefaultWorkingDirectory)/Env'
-            commandOptions: '-auto-approve'
-            allowTelemetryCollection: true
-  displayName: "Deploy Terraform Script"

@@ -1,0 +1,39 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- task: TerraformInstaller@0
+  inputs:
+    terraformVersion: 'latest'
+  displayName: "Install Terraform"
+
+- task: TerraformCLI@0
+  inputs:
+            command: 'init'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/Env'
+            backendType: 'selfConfigured'
+            allowTelemetryCollection: true
+  displayName: "Initiallize Terraform"
+  
+- task: TerraformCLI@0
+  inputs:
+            command: 'validate'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/Env'
+            allowTelemetryCollection: true
+  displayName: "validate Terraform Script"
+
+- task: TerraformCLI@0
+  inputs:
+            command: 'apply'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/Env'
+            commandOptions: '-auto-approve'
+            allowTelemetryCollection: true
+  displayName: "Deploy Terraform Script"

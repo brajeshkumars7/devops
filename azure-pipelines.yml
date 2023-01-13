@@ -22,13 +22,34 @@ stages:
           inputs:
             terraformVersion: 'latest'
         - task: TerraformCLI@0
+         
           inputs:
+             
             command: 'init'
             allowTelemetryCollection: true
+            workingDirectory: 'StorageAccount-Terraform'
+
+            backendServiceArm: 'd079a55f-f2f8-4eaa-9a72-f0c00fce0855'
+
+            backendAzureRmResourceGroupName: 'resourcegroup-tfnew'
+
+            backendAzureRmStorageAccountName: 'tfstraccunt1'
+
+            backendAzureRmContainerName: 'tfstate'
+
+            backendAzureRmKey: 'tf/terraform.tfstate'
         
         - task: TerraformCLI@0
           inputs:
             command: 'validate'
             allowTelemetryCollection: true
+        
+         
+     
+
+      
+
+      
+
              
          

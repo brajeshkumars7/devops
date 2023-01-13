@@ -28,10 +28,11 @@ stages:
         - task: TerraformCLI@0
           inputs:
             command: 'plan'
-            workingDirectory: '$(System.DefaultWorkingDirectory)/skip-step'
-            commandOptions: '-out=tfplan'
-            #environmentServiceNameAzureRM: '$(subscription)'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/Env'
+            backendType: 'selfConfigured'
             allowTelemetryCollection: true
+             
+             
         - task: TerraformCLI@0
           inputs:
             command: 'apply'

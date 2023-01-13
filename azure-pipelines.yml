@@ -23,15 +23,5 @@ steps:
     terraformVersion: 'latest'
   displayName: "Install Terraform"
 
-- task: TerraformCLI@0
-  inputs:
-    command: 'init'
-    workingDirectory: '$(System.DefaultWorkingDirectory)/Env'
-    backendType: 'selfConfigured'
-    allowTelemetryCollection: true
-    backendAzureRmResourceGroupName: '$(resourceGroup)'
-    backendAzureRmStorageAccountName: '$(storageAccount)'
-    backendAzureRmContainerName: '$(container)'
-    backendAzureRmKey: '$(tfstateFile)'
-  displayName: "Initiallize Terraform"
+
   

@@ -2,6 +2,7 @@
 # Start with a minimal pipeline that you can customize to build and deploy your code.
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
+name: $(Date:yy)$(DayOfYear)$(Rev:rrrr)
 
 trigger:
 - main
@@ -10,18 +11,90 @@ pool:
   vmImage: ubuntu-latest
 
 variables:
-  subscription: d079a55f-f2f8-4eaa-9a72-f0c00fce0855
-  resourceGroup: resourcegroup-tfnew
-  storageAccount: tfstraccunt1
-  container: tfstate
-  tfstateFile: terraform.tfstate
-  anyTfChanges: false
+  - group: Versioning
 
-steps:
-- task: TerraformInstaller@0
-  inputs:
-    terraformVersion: 'latest'
-  displayName: "Install Terraform"
+stages:
+  - stage: build
+    displayName: BuildArtifacts
+    jobs:
+      - job: BuildArtifact
+        displayName: Build Artifact
+        steps:
+          
+        
+        - task: TerraformInstaller@0
+          inputs:
+            terraformVersion: 'latest'
+          displayName: "Install Terraform"
+
+      
+        - task: TerraformCLI@0
+          inputs:
+            command: 'init'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/Env'
+            backendType: 'selfConfigured'
+            allowTelemetryCollection: true
+          displayName: "Initiallize Terraform"
+
+        - task: Bash@3
+          inputs:
+            targetType: 'inline'
+            script: |    
+              echo 'listing directory structure'
+              pwd && ls -l && tree
+
+        - task: TerraformCLI@0
+          inputs:
+            command: 'validate'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/Env'
+            allowTelemetryCollection: true
+          displayName: "validate Terraform Script"
 
 
-  
+  - stage: publish
+    displayName: "Publish Artifacts"
+    dependsOn: "Build"
+    jobs:
+      - job: 
+        displayName: "Publish Artifact"
+        steps:
+        - task: CopyPublishBuildArtifacts@1
+          displayName: 'Copy Artifacts'
+          inputs:
+            Contents: '*'
+            ArtifactName: 'azure-infra-env'
+            ArtifactType: 'Container'
+
+        - task: UniversalPackages@0
+          displayName: "Publish Universal Package"
+          inputs:
+            command: 'publish'
+            publishDirectory: '$(Build.ArtifactStagingDirectory)'
+            feedsToUsePublish: 'internal'
+            vstsFeedPublish: 'c757312b-1583-40e5-a66e-fccf8fca16d3/13240145-257c-4b44-a5b6-0b508a2d5900'
+            vstsFeedPackagePublish: 'azure-infra-env'
+            versionOption: 'custom'
+            versionPublish: '$(majorVersion).$(minorVersion).$(Build.BuildNumber)-$(Build.SourceVersion)'
+            packagePublishDescription: 'Azure Infra - Environments'
+
+  - stage: deploy
+    displayName: "Deploy Artifacts"
+    dependsOn: "Build"
+    jobs:
+      - job: 
+        displayName: "Deploy Artifact"
+        steps:
+        - task: TerraformCLI@0
+          inputs:
+           command: 'init'
+           workingDirectory: '$(System.DefaultWorkingDirectory)/Env'
+           allowTelemetryCollection: true
+          displayName: "Initiallize Teraform"
+
+        - task: TerraformCLI@0
+          inputs:
+            command: 'apply'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/Env'
+            commandOptions: '-auto-approve'
+            allowTelemetryCollection: true
+          displayName: "Deploy Terraform Script"

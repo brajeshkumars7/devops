@@ -25,15 +25,10 @@ stages:
           inputs:
             command: 'init'
             allowTelemetryCollection: true
+        
         - task: TerraformCLI@0
           inputs:
-            command: 'plan'
-            workingDirectory: '$(System.DefaultWorkingDirectory)/Env'
-            backendType: 'selfConfigured'
+            command: 'validate'
             allowTelemetryCollection: true
              
-             
-        - task: TerraformCLI@0
-          inputs:
-            command: 'apply'
-            allowTelemetryCollection: true
+         

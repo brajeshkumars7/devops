@@ -15,25 +15,22 @@ variables:
 
 stages:
   - stage: build
-    displayName: BuildArtifacts
     jobs:
-      - job: Test Terraform
-
-- task: TerraformInstaller@0
-                inputs:
-                  terraformVersion: 'latest'
-
-              - task: TerraformCLI@0
-                inputs:
-                  command: 'init'
-                  allowTelemetryCollection: true
-
-              - task: TerraformCLI@0
-                inputs:
-                  command: 'plan'
-                  allowTelemetryCollection: true
-              - task: TerraformCLI@0
-                inputs:
-                  command: 'apply'
-                  runAzLogin: true
-                  allowTelemetryCollection: true
+      - job: InitializeTerraform
+        displayName: Initailize
+        steps:
+        - task: TerraformInstaller@0
+          inputs:
+            terraformVersion: 'latest'
+        - task: TerraformCLI@0
+          inputs:
+            command: 'init'
+            allowTelemetryCollection: true
+        - task: TerraformCLI@0
+          inputs:
+            command: 'plan'
+            allowTelemetryCollection: true
+        - task: TerraformCLI@0
+          inputs:
+            command: 'apply'
+            allowTelemetryCollection: true

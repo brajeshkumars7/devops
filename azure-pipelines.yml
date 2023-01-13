@@ -11,12 +11,7 @@ pool:
   vmImage: ubuntu-latest
 
 variables:
-   subscription: d079a55f-f2f8-4eaa-9a72-f0c00fce0855
-   resourceGroup: resourcegroup-tfnew
-   storageAccount: tfstraccunt1
-   container: tfstate
-   tfstateFile: terraform.tfstate
-   anyTfChanges: false
+    - group: Versioning
 stages:
   - stage: build
     jobs:
@@ -29,12 +24,6 @@ stages:
         - task: TerraformCLI@0
           inputs:
             command: 'init'
-            workingDirectory: '$(System.DefaultWorkingDirectory)/skip-step'
-            backendServiceArm: '$(subscription)'
-            backendAzureRmResourceGroupName: '$(resourceGroup)'
-            backendAzureRmStorageAccountName: '$(storageAccount)'
-            backendAzureRmContainerName: '$(container)'
-            backendAzureRmKey: '$(tfstateFile)'
             allowTelemetryCollection: true
         - task: TerraformCLI@0
           inputs:

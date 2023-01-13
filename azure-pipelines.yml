@@ -23,7 +23,7 @@ stages:
               provider: 'azurerm'
               command: 'validate'
 - stage : deploy
-jobs:
+  jobs:
         - deployment: deploy_terraform
           continueOnError : false
           environment: 'dev'
@@ -55,7 +55,6 @@ jobs:
                       environmentServiceNameAzureRM: 'azure-spn'
                   - task: TerraformTaskV3@3
                     displayName : 'apply'
-                    
                     inputs:
                       provider: 'azurerm'
                       command: 'apply'

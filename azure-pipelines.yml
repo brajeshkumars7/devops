@@ -17,53 +17,23 @@ stages:
   - stage: build
     displayName: BuildArtifacts
     jobs:
-      - job: BuildArtifact
-        displayName: Build Artifact
-        steps:
-          
-        
-        - task: TerraformInstaller@0
-          inputs:
-            terraformVersion: 'latest'
-          displayName: "Install Terraform"
+      - job: Test Terraform
 
-      
-        - task: TerraformCLI@0
-          inputs:
-            command: 'init'
-            workingDirectory: '$(System.DefaultWorkingDirectory)/Env'
-            backendType: 'selfConfigured'
-            allowTelemetryCollection: true
-          displayName: "Initiallize Terraform"
+- task: TerraformInstaller@0
+                inputs:
+                  terraformVersion: 'latest'
 
+              - task: TerraformCLI@0
+                inputs:
+                  command: 'init'
+                  allowTelemetryCollection: true
 
-
-        - task: TerraformCLI@0
-          inputs:
-            command: 'validate'
-            workingDirectory: '$(System.DefaultWorkingDirectory)/Env'
-            allowTelemetryCollection: true
-          displayName: "validate Terraform Script"
-
-
-  - stage: deploy
-    displayName: "Deploy Artifacts"
-    dependsOn: "Build"
-    jobs:
-      - job: 
-        displayName: "Deploy Artifact"
-        steps:
-        - task: TerraformCLI@0
-          inputs:
-           command: 'init'
-           workingDirectory: '$(System.DefaultWorkingDirectory)/Env'
-           allowTelemetryCollection: true
-          displayName: "Initiallize Teraform"
-
-        - task: TerraformCLI@0
-          inputs:
-            command: 'apply'
-            workingDirectory: '$(System.DefaultWorkingDirectory)/Env'
-            commandOptions: '-auto-approve'
-            allowTelemetryCollection: true
-          displayName: "Deploy Terraform Script"
+              - task: TerraformCLI@0
+                inputs:
+                  command: 'plan'
+                  allowTelemetryCollection: true
+              - task: TerraformCLI@0
+                inputs:
+                  command: 'apply'
+                  runAzLogin: true
+                  allowTelemetryCollection: true

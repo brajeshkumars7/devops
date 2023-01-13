@@ -1,68 +1,63 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-name: $(Date:yy)$(DayOfYear)$(Rev:rrrr)
-
-trigger:
-- main
-
-pool:
-  vmImage: ubuntu-latest
-
-variables:
-    
-      subscription: d079a55f-f2f8-4eaa-9a72-f0c00fce0855
-      resourceGroup: resourcegroup-tfnew
-      storageAccount: tfstraccunt1
-      container: tfstate
-      tfstateFile: terraform.tfstate
-      anyTfChanges: false
 stages:
-  - stage: build
-    jobs:
-      - job: InitializeTerraform
-        displayName: Initailize
-        steps:
+- stage : validate
+  jobs:
+    - job: validate
+      continueOnError : false
+      steps:
+        
         - task: TerraformInstaller@0
           inputs:
-            terraformVersion: 'latest'
-        - task: TerraformCLI@0
-         
+          terraformVersion: 'latest'
+        - task: TerraformTaskV3@3
+          displayName : 'init'
           inputs:
-             
+            provider: 'azurerm'
             command: 'init'
-            workingDirectory: '$(System.DefaultWorkingDirectory)/skip-step'
-            backendServiceArm: '$(subscription)'
-            backendAzureRmResourceGroupName: '$(resourceGroup)'
-            backendAzureRmStorageAccountName: '$(storageAccount)'
-            backendAzureRmContainerName: '$(container)'
-            backendAzureRmKey: '$(tfstateFile)'
-            allowTelemetryCollection: true
-             
-        
-        - task: TerraformCLI@0
+            backendServiceArm: 'azure-spn'
+            backendAzureRmResourceGroupName: 'resourcegroup-tfstate'
+            backendAzureRmStorageAccountName: 'terraformtfstateskips'
+            backendAzureRmContainerName: 'tfcontainer'
+            backendAzureRmKey: 'terraform.tfstate'
+        - task: TerraformTaskV3@3
+          displayName : 'validate'
           inputs:
-            command: 'validate'
-            allowTelemetryCollection: true
-        
-        - task: TerraformCLI@0
-          inputs:
-            command: 'show'
-            allowTelemetryCollection: true
-        
-        - task: TerraformCLI@0
-          inputs:
-            command: 'apply'
-            allowTelemetryCollection: true
-        
-
-         
-     
-
-      
-
-      
-
-             
-         
+              provider: 'azurerm'
+              command: 'validate'
+- stage : deploy
+jobs:
+        - deployment: deploy_terraform
+          continueOnError : false
+          environment: 'dev'
+          strategy:
+            runOnce:
+              deploy:
+                steps:
+                  - checkout: self
+                  - task: TerraformInstaller@0
+                    displayName : 'install'
+                    inputs:
+                      terraformVersion: 'latest'
+                    
+                  - task: TerraformTaskV3@3
+                    displayName : 'init'
+                    inputs:
+                        provider: 'azurerm'
+                        command: 'init'
+                        backendServiceArm: 'azure-spn'
+                        backendAzureRmResourceGroupName: 'resourcegroup-tfstate'
+                        backendAzureRmStorageAccountName: 'terraformtfstateskips'
+                        backendAzureRmContainerName: 'tfcontainer'
+                        backendAzureRmKey: 'terraform.tfstate'
+                  - task: TerraformTaskV3@3
+                    displayName : 'plan'
+                    inputs:
+                      provider: 'azurerm'
+                      command: 'plan'
+                      environmentServiceNameAzureRM: 'azure-spn'
+                  - task: TerraformTaskV3@3
+                    displayName : 'apply'
+                    
+                    inputs:
+                      provider: 'azurerm'
+                      command: 'apply'
+                      environmentServiceNameAzureRM: 'azure-spn'

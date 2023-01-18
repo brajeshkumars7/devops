@@ -47,12 +47,7 @@ stages:
                         backendAzureRmStorageAccountName: 'terraformtfstateskips'
                         backendAzureRmContainerName: 'tfcontainer'
                         backendAzureRmKey: 'terraform.tfstate'
-                  - task: TerraformTaskV3@3
-                    displayName : 'plan'
-                    inputs:
-                      provider: 'azurerm'
-                      command: 'plan'
-                      environmentServiceNameAzureRM: 'azure-spn'
+                  
                   - task: TerraformTaskV3@3
                     displayName : 'apply'
                     inputs:

@@ -40,17 +40,19 @@ stages:
                   - task: TerraformTaskV3@3
                     displayName : 'init'
                     inputs:
-                        provider: 'azurerm'
-                        command: 'init'
-                        backendServiceArm: 'azure-spn'
-                        backendAzureRmResourceGroupName: 'resourcegroup-tfstate'
-                        backendAzureRmStorageAccountName: 'terraformtfstateskips'
-                        backendAzureRmContainerName: 'tfcontainer'
-                        backendAzureRmKey: 'terraform.tfstate'
+                      provider: 'azurerm'
+                      command: 'init'
+                      workingDirectory: '$(System.DefaultWorkingDirectory)/ devops/terraform/'
+                      backendServiceArm: 'azure-spn'
+                      backendAzureRmResourceGroupName: 'resourcegroup-tfstate'
+                      backendAzureRmStorageAccountName: 'terraformtfstateskips'
+                      backendAzureRmContainerName: 'tfcontainer'
+                      backendAzureRmKey: 'terraform.tfstate'
                   
                   - task: TerraformTaskV3@3
                     displayName : 'apply'
                     inputs:
                       provider: 'azurerm'
                       command: 'apply'
+                      workingDirectory: '$(System.DefaultWorkingDirectory)/ devops/terraform/'
                       environmentServiceNameAzureRM: 'azure-spn'

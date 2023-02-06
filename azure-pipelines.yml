@@ -49,10 +49,4 @@ stages:
                       backendAzureRmContainerName: 'tfcontainer'
                       backendAzureRmKey: 'terraform.tfstate'
                   
-                  - task: TerraformTaskV3@3
-                    displayName : 'apply'
-                    inputs:
-                      provider: 'azurerm'
-                      command: 'apply'
-                      workingDirectory: '$(System.DefaultWorkingDirectory)/ devops/terraform/'
-                      environmentServiceNameAzureRM: 'azure-spn'
+- task: SonarQubeAnalyze@5
